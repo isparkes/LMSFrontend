@@ -1,0 +1,171 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { apiFetch } from "@/lib/api";
+
+interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  isPublished: boolean;
+  ordering: number;
+}
+
+export default function AdminCoursesPage() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ title: "", description: "", ordering: 0 });
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
+
+  const loadCourses = () => {
+    apiFetch<Course[]>("/courses")
+      .then(setCourses)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    setError("");
+    try {
+      await apiFetch("/courses", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
+      setForm({ title: "", description: "", ordering: 0 });
+      loadCourses();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to create course");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this course? This will also delete all modules and lessons."))
+      return;
+    try {
+      await apiFetch(`/courses/${id}`, { method: "DELETE" });
+      loadCourses();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to delete");
+    }
+  };
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Manage Courses</h1>
+
+      <form
+        onSubmit={handleCreate}
+        className="bg-white p-4 rounded-lg shadow mb-6 space-y-3"
+      >
+        <h2 className="font-semibold">Create New Course</h2>
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input
+            type="text"
+            placeholder="Course title"
+            required
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+            className="border border-gray-300 rounded px-3 py-2"
+          />
+          <input
+            type="text"
+            placeholder="Description (optional)"
+            value={form.description}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, description: e.target.value }))
+            }
+            className="border border-gray-300 rounded px-3 py-2"
+          />
+          <input
+            type="number"
+            placeholder="Order"
+            min={0}
+            value={form.ordering}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, ordering: parseInt(e.target.value) || 0 }))
+            }
+            className="border border-gray-300 rounded px-3 py-2"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={creating}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {creating ? "Creating..." : "Create Course"}
+        </button>
+      </form>
+
+      {loading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : (
+        <div className="bg-white rounded-lg shadow">
+          <table className="w-full text-left">
+            <thead className="border-b bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-sm font-medium text-gray-600">Title</th>
+                <th className="px-4 py-3 text-sm font-medium text-gray-600">Published</th>
+                <th className="px-4 py-3 text-sm font-medium text-gray-600">Order</th>
+                <th className="px-4 py-3 text-sm font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {courses.map((course) => (
+                <tr key={course.id}>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/courses/${course.id}`}
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      {course.title}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded ${
+                        course.isPublished
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {course.isPublished ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {course.ordering}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => handleDelete(course.id)}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {courses.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-4 py-6 text-center text-gray-400">
+                    No courses yet. Create one above.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
