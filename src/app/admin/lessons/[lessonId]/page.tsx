@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import FilePicker from "@/components/FilePicker";
 
 interface QuizQuestion {
   id: string;
@@ -73,8 +74,6 @@ export default function AdminLessonEditPage() {
     order: 0,
   });
   const [creatingQuestion, setCreatingQuestion] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [userAttempts, setUserAttempts] = useState<UserAttemptSummary[]>([]);
   const [resettingUserId, setResettingUserId] = useState<string | null>(null);
 
@@ -299,46 +298,16 @@ export default function AdminLessonEditPage() {
                   className="w-full rounded max-h-64"
                   src={`/uploads/videos/${form.videoFilename}`}
                 />
-                <p className="text-xs text-gray-500 mt-1 font-mono">
-                  {form.videoFilename}
-                </p>
               </div>
             )}
-            <input
-              type="file"
-              accept="video/mp4,video/webm,video/ogg,video/quicktime"
-              disabled={uploadingVideo}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                setUploadingVideo(true);
-                setError("");
-                try {
-                  const formData = new FormData();
-                  formData.append("video", file);
-                  const data = await apiFetch<{ filename: string }>(
-                    "/uploads/video",
-                    { method: "POST", body: formData },
-                  );
-                  setForm((f) => ({ ...f, videoFilename: data.filename }));
-                } catch (err) {
-                  setError(
-                    err instanceof Error ? err.message : "Video upload failed",
-                  );
-                } finally {
-                  setUploadingVideo(false);
-                }
-              }}
-              className="w-full border border-gray-300 rounded px-3 py-2"
+            <FilePicker
+              type="video"
+              value={form.videoFilename}
+              onChange={(filename) =>
+                setForm((f) => ({ ...f, videoFilename: filename }))
+              }
+              onError={setError}
             />
-            {uploadingVideo && (
-              <p className="text-sm text-blue-600 mt-1">Uploading video...</p>
-            )}
-            <p className="text-xs text-gray-500 mt-1">
-              {form.videoFilename
-                ? "Upload a new file to replace the current video."
-                : "Upload a video file (MP4, WebM, OGG, MOV). Max 100 MB."}
-            </p>
           </div>
         )}
         {lesson.type === "pdf" && (
@@ -352,46 +321,16 @@ export default function AdminLessonEditPage() {
                   src={`/uploads/pdfs/${form.pdfFilename}`}
                   className="w-full h-64 rounded border"
                 />
-                <p className="text-xs text-gray-500 mt-1 font-mono">
-                  {form.pdfFilename}
-                </p>
               </div>
             )}
-            <input
-              type="file"
-              accept="application/pdf"
-              disabled={uploadingPdf}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                setUploadingPdf(true);
-                setError("");
-                try {
-                  const formData = new FormData();
-                  formData.append("pdf", file);
-                  const data = await apiFetch<{ filename: string }>(
-                    "/uploads/pdf",
-                    { method: "POST", body: formData },
-                  );
-                  setForm((f) => ({ ...f, pdfFilename: data.filename }));
-                } catch (err) {
-                  setError(
-                    err instanceof Error ? err.message : "PDF upload failed",
-                  );
-                } finally {
-                  setUploadingPdf(false);
-                }
-              }}
-              className="w-full border border-gray-300 rounded px-3 py-2"
+            <FilePicker
+              type="pdf"
+              value={form.pdfFilename}
+              onChange={(filename) =>
+                setForm((f) => ({ ...f, pdfFilename: filename }))
+              }
+              onError={setError}
             />
-            {uploadingPdf && (
-              <p className="text-sm text-blue-600 mt-1">Uploading PDF...</p>
-            )}
-            <p className="text-xs text-gray-500 mt-1">
-              {form.pdfFilename
-                ? "Upload a new file to replace the current PDF."
-                : "Upload a PDF file. Max 50 MB."}
-            </p>
           </div>
         )}
         {lesson.type === "quiz" && (

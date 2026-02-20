@@ -48,6 +48,31 @@ export default function AdminCoursesPage() {
     }
   };
 
+  const sortedCourses = [...courses].sort((a, b) => a.ordering - b.ordering);
+
+  const handleMove = async (index: number, direction: "up" | "down") => {
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= sortedCourses.length) return;
+
+    const reordered = [...sortedCourses];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(swapIndex, 0, moved);
+
+    try {
+      await Promise.all(
+        reordered.map((course, i) =>
+          apiFetch(`/courses/${course.id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ ordering: i }),
+          }),
+        ),
+      );
+      loadCourses();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to reorder");
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this course? This will also delete all modules and lessons."))
       return;
@@ -121,7 +146,7 @@ export default function AdminCoursesPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {courses.map((course) => (
+              {sortedCourses.map((course, index) => (
                 <tr key={course.id}>
                   <td className="px-4 py-3">
                     <Link
@@ -142,8 +167,25 @@ export default function AdminCoursesPage() {
                       {course.isPublished ? "Published" : "Draft"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {course.ordering}
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col gap-0.5">
+                      <button
+                        onClick={() => handleMove(index, "up")}
+                        disabled={index === 0}
+                        className="text-gray-400 hover:text-gray-700 disabled:opacity-25 text-xs leading-none"
+                        title="Move up"
+                      >
+                        &#9650;
+                      </button>
+                      <button
+                        onClick={() => handleMove(index, "down")}
+                        disabled={index === sortedCourses.length - 1}
+                        className="text-gray-400 hover:text-gray-700 disabled:opacity-25 text-xs leading-none"
+                        title="Move down"
+                      >
+                        &#9660;
+                      </button>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <button

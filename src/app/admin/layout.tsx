@@ -29,8 +29,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <Link href="/admin/users" className="text-blue-600 hover:underline font-medium">
           Users
         </Link>
-        <Link href="/admin/uploads" className="text-blue-600 hover:underline font-medium">
-          Upload Video
+        <Link href="/admin/content-library" className="text-blue-600 hover:underline font-medium">
+          Content Library
         </Link>
       </div>
       {children}

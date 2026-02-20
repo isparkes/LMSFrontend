@@ -102,6 +102,31 @@ export default function AdminCourseEditPage() {
     }
   };
 
+  const handleMoveModule = async (index: number, direction: "up" | "down") => {
+    if (!course) return;
+    const sorted = [...course.modules].sort((a, b) => a.order - b.order);
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= sorted.length) return;
+
+    const reordered = [...sorted];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(swapIndex, 0, moved);
+
+    try {
+      await Promise.all(
+        reordered.map((mod, i) =>
+          apiFetch(`/courses/${courseId}/modules/${mod.id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ order: i }),
+          }),
+        ),
+      );
+      loadCourse();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to reorder");
+    }
+  };
+
   const handleDeleteModule = async (moduleId: string) => {
     if (!confirm("Delete this module and all its lessons?")) return;
     try {
@@ -256,12 +281,30 @@ export default function AdminCourseEditPage() {
         </form>
 
         <div className="space-y-2">
-          {sortedModules.map((mod) => (
+          {sortedModules.map((mod, index) => (
             <div
               key={mod.id}
-              className="flex items-center justify-between border rounded p-3"
+              className="flex items-center gap-2 border rounded p-3"
             >
-              <div>
+              <div className="flex flex-col gap-0.5">
+                <button
+                  onClick={() => handleMoveModule(index, "up")}
+                  disabled={index === 0}
+                  className="text-gray-400 hover:text-gray-700 disabled:opacity-25 text-xs leading-none"
+                  title="Move up"
+                >
+                  &#9650;
+                </button>
+                <button
+                  onClick={() => handleMoveModule(index, "down")}
+                  disabled={index === sortedModules.length - 1}
+                  className="text-gray-400 hover:text-gray-700 disabled:opacity-25 text-xs leading-none"
+                  title="Move down"
+                >
+                  &#9660;
+                </button>
+              </div>
+              <div className="flex-1 min-w-0">
                 <Link
                   href={`/admin/courses/${courseId}/modules/${mod.id}`}
                   className="text-blue-600 hover:underline font-medium"
@@ -269,12 +312,12 @@ export default function AdminCourseEditPage() {
                   {mod.title}
                 </Link>
                 <span className="text-xs text-gray-400 ml-2">
-                  {(mod.lessons || []).length} lessons | order: {mod.order}
+                  {(mod.lessons || []).length} lessons
                 </span>
               </div>
               <button
                 onClick={() => handleDeleteModule(mod.id)}
-                className="text-red-600 hover:text-red-800 text-sm"
+                className="text-red-600 hover:text-red-800 text-sm shrink-0"
               >
                 Delete
               </button>

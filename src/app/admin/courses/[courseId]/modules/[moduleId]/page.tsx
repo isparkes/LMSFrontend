@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
+import FilePicker from "@/components/FilePicker";
 
 interface Lesson {
   id: string;
@@ -46,8 +47,6 @@ export default function AdminModuleEditPage() {
     showCorrectAnswers: true,
   });
   const [creatingLesson, setCreatingLesson] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
 
   const loadModule = () => {
     apiFetch<Module>(`/courses/${courseId}/modules/${moduleId}`)
@@ -309,82 +308,24 @@ export default function AdminModuleEditPage() {
             />
           )}
           {lessonForm.type === "video" && (
-            <div>
-              <input
-                type="file"
-                accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                disabled={uploadingVideo}
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setUploadingVideo(true);
-                  setError("");
-                  try {
-                    const formData = new FormData();
-                    formData.append("video", file);
-                    const data = await apiFetch<{ filename: string }>(
-                      "/uploads/video",
-                      { method: "POST", body: formData },
-                    );
-                    setLessonForm((f) => ({ ...f, videoFilename: data.filename }));
-                  } catch (err) {
-                    setError(
-                      err instanceof Error ? err.message : "Video upload failed",
-                    );
-                  } finally {
-                    setUploadingVideo(false);
-                  }
-                }}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              />
-              {uploadingVideo && (
-                <p className="text-sm text-blue-600 mt-1">Uploading video...</p>
-              )}
-              {lessonForm.videoFilename && (
-                <p className="text-xs text-green-600 mt-1">
-                  Uploaded: {lessonForm.videoFilename}
-                </p>
-              )}
-            </div>
+            <FilePicker
+              type="video"
+              value={lessonForm.videoFilename}
+              onChange={(filename) =>
+                setLessonForm((f) => ({ ...f, videoFilename: filename }))
+              }
+              onError={setError}
+            />
           )}
           {lessonForm.type === "pdf" && (
-            <div>
-              <input
-                type="file"
-                accept="application/pdf"
-                disabled={uploadingPdf}
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setUploadingPdf(true);
-                  setError("");
-                  try {
-                    const formData = new FormData();
-                    formData.append("pdf", file);
-                    const data = await apiFetch<{ filename: string }>(
-                      "/uploads/pdf",
-                      { method: "POST", body: formData },
-                    );
-                    setLessonForm((f) => ({ ...f, pdfFilename: data.filename }));
-                  } catch (err) {
-                    setError(
-                      err instanceof Error ? err.message : "PDF upload failed",
-                    );
-                  } finally {
-                    setUploadingPdf(false);
-                  }
-                }}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              />
-              {uploadingPdf && (
-                <p className="text-sm text-blue-600 mt-1">Uploading PDF...</p>
-              )}
-              {lessonForm.pdfFilename && (
-                <p className="text-xs text-green-600 mt-1">
-                  Uploaded: {lessonForm.pdfFilename}
-                </p>
-              )}
-            </div>
+            <FilePicker
+              type="pdf"
+              value={lessonForm.pdfFilename}
+              onChange={(filename) =>
+                setLessonForm((f) => ({ ...f, pdfFilename: filename }))
+              }
+              onError={setError}
+            />
           )}
           {lessonForm.type === "quiz" && (
             <div className="flex items-center gap-3">
