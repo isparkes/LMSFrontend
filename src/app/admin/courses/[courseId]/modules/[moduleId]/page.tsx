@@ -30,6 +30,7 @@ export default function AdminModuleEditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const [form, setForm] = useState({ title: "", description: "", order: 0 });
   const [lessonForm, setLessonForm] = useState({
@@ -75,6 +76,8 @@ export default function AdminModuleEditPage() {
         method: "PATCH",
         body: JSON.stringify(form),
       });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
       loadModule();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save");
@@ -235,13 +238,18 @@ export default function AdminModuleEditPage() {
             />
           </div>
         </div>
-        <button
-          type="submit"
-          disabled={saving}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+          {saved && (
+            <span className="text-sm text-green-600 font-medium">Saved!</span>
+          )}
+        </div>
       </form>
 
       <div className="bg-white p-4 rounded-lg shadow">
