@@ -161,11 +161,12 @@ On load (when `moduleId` and `courseId` are present), three requests are made in
 
 ### Admin Routes
 
-All admin routes are protected by `AdminLayout`, which redirects non-admin users to `/courses`. Admin navigation links: Courses, Users, Upload Video.
+All admin routes are protected by `AdminLayout`, which redirects non-admin users to `/courses`. Admin navigation links: Courses, Content Library, Users.
 
 #### Manage Courses (`/admin/courses`)
 
-- Lists all courses (title, published/draft badge, order number)
+- Lists all courses sorted by `ordering`, each row showing title, published/draft badge, and up/down chevron buttons (▲/▼) for reordering
+- Reorder: clicking a chevron swaps the course with its neighbour and PATCHes all courses with sequential `ordering` values
 - Create course form: title (required), description (optional), ordering number
 - Delete button on each row — confirms "This will also delete all modules and lessons"
 
@@ -183,7 +184,8 @@ Edit form fields:
 
 Module management (below the edit form):
 
-- Lists modules sorted by `order`, each with lesson count and order number
+- Lists modules sorted by `order`, each with lesson count and up/down chevron buttons (▲/▼) for reordering
+- Reorder: clicking a chevron swaps the module with its neighbour and PATCHes all modules with sequential `order` values
 - Add Module inline form: title (required), description, order
 - Delete module button — confirms "This will delete all its lessons"
 - Each module title links to `/admin/courses/:courseId/modules/:moduleId`
@@ -206,8 +208,8 @@ Lesson management (below the edit form):
 | Order | All |
 | Notes | All (HTML/plain-URL, optional) |
 | Content (HTML) | `text` only |
-| Video file upload | `video` only — uploads immediately to `POST /uploads/video`, stores returned filename |
-| PDF file upload | `pdf` only — uploads immediately to `POST /uploads/pdf`, stores returned filename |
+| Video file picker | `video` only — `FilePicker` component; browse library or upload new file |
+| PDF file picker | `pdf` only — `FilePicker` component; browse library or upload new file |
 | Pass Mark (%) | `quiz` only — 0 = no requirement |
 | Max Attempts | `quiz` only — 0 = unlimited |
 | Randomize question order | `quiz` only |
@@ -218,7 +220,7 @@ Lesson management (below the edit form):
 
 Loads `GET /modules/:moduleId/lessons/:lessonId`.
 
-Edit form: same type-conditional fields as the Add Lesson form. For video and pdf lessons, the current file is previewed (video player or iframe) before the upload input.
+Edit form: same type-conditional fields as the Add Lesson form. For video and pdf lessons, the current file is previewed (video player or iframe) above the `FilePicker`.
 
 **Quiz question management** (quiz lessons only):
 
@@ -237,11 +239,19 @@ Columns: User name, email, attempt count, best score (%), pass/fail status, "Res
 
 Reset calls `POST /lessons/:lessonId/reset-attempts/:userId`, allowing the user to retake the quiz.
 
-#### Upload Video (`/admin/uploads`)
+#### Content Library (`/admin/content-library`)
 
-Standalone video upload form. Accepts MP4, WebM, OGG, QuickTime; max 100 MB. On success displays the stored filename, original name, file size, and MIME type. The filename is what should be entered when creating a video lesson.
+Central management page for all uploaded files. Two tabs: **Videos** and **PDFs** (each showing a count badge).
 
-Note: video and PDF uploads are also available inline on the Edit Module and Edit Lesson pages.
+**Upload:** File input with type-appropriate MIME filter + Upload button. Accepts the same constraints as the standalone upload endpoints.
+
+**File table columns:** Filename (monospace, truncated with full name on hover), Size (MB), Uploaded (date), Used By (lesson title pills, or muted "Unused"), Actions.
+
+**Actions — Inline rename:** Click "Rename" to reveal a text input pre-filled with the filename stem (no extension). Press Enter or "Save" to PATCH `.../rename`; the extension is preserved server-side. Press Escape or "Cancel" to discard.
+
+**Actions — Inline delete confirmation:** Click "Delete" to reveal a confirmation area. If the file is used by lessons, a warning lists the affected lesson titles and notes that deletion will remove the file reference from those lessons. Click "Delete" to confirm (DELETE endpoint) or "Cancel" to abort.
+
+Switching tabs resets any open inline rename or delete state.
 
 #### Users (`/admin/users`)
 
@@ -364,6 +374,25 @@ Gating is computed client-side from the progress API response, which includes `p
 
 ## Components
 
+### `FilePicker`
+
+```tsx
+<FilePicker
+  type="video" | "pdf"
+  value={string}                  // current filename (empty string = none)
+  onChange={(filename) => void}   // called with new filename or "" on clear
+  onError={(msg) => void}         // optional; called on upload failure
+/>
+```
+
+A two-tab widget for selecting an uploaded file. Fetches the library from `/uploads/videos` or `/uploads/pdfs` on mount.
+
+**Library tab:** Scrollable list (max 192 px) of files with filename and size. Supports text search (case-insensitive). Currently selected file is highlighted. Clicking a file calls `onChange`.
+
+**Current selection bar:** Shows the selected filename (monospace) or "No file selected". Includes a "Clear" button when a file is selected.
+
+**Upload new tab:** File input with type-appropriate MIME filter. On file selection, immediately POSTs to `/uploads/video` or `/uploads/pdf`, refreshes the library list, auto-selects the uploaded file, and switches back to the Library tab.
+
 ### `Navbar`
 
 Shows the LMS logo (links to `/`). When authenticated:
@@ -436,19 +465,32 @@ See [Quiz System](#quiz-system) above.
 | DELETE | `/progress/admin/users/:id/modules/:id` | Admin — reset module progress |
 | GET | `/users/:id` | Admin user detail |
 | PATCH | `/users/:id/password` | Admin — change user password |
+| GET | `/uploads/videos` | Admin — list video files in library |
+| GET | `/uploads/pdfs` | Admin — list PDF files in library |
 | POST | `/uploads/video` | Admin — upload video file |
 | POST | `/uploads/pdf` | Admin — upload PDF file |
+| DELETE | `/uploads/videos/:filename` | Admin — delete video file |
+| DELETE | `/uploads/pdfs/:filename` | Admin — delete PDF file |
+| PATCH | `/uploads/videos/:filename/rename` | Admin — rename video file |
+| PATCH | `/uploads/pdfs/:filename/rename` | Admin — rename PDF file |
 
 ---
 
 ## File Uploads
 
+### Filename Strategy
+
+Uploaded files are stored using a sanitized version of the original filename (not a UUID). Sanitization: lowercase, replace characters outside `[a-z0-9._-]` with hyphens, deduplicate hyphens, trim leading/trailing hyphens, lowercase extension. If re-uploading a file with the same name it silently overwrites the existing one.
+
 ### Video
 
 - Accepted MIME types: `video/mp4`, `video/webm`, `video/ogg`, `video/quicktime`
 - Max size: 100 MB (enforced by backend)
-- Endpoint: `POST /uploads/video` (multipart, field name `video`)
-- Response: `{ filename, originalName, size, mimetype }`
+- Upload endpoint: `POST /uploads/video` (multipart, field name `video`)
+- Upload response: `{ filename, originalName, size, mimetype }`
+- List endpoint: `GET /uploads/videos` → `FileEntry[]`
+- Delete endpoint: `DELETE /uploads/videos/:filename`
+- Rename endpoint: `PATCH /uploads/videos/:filename/rename` body `{ newDisplayName: string }`
 - Stored filename is referenced in lesson as `videoFilename`
 - Served at `/uploads/videos/:filename`
 
@@ -456,12 +498,30 @@ See [Quiz System](#quiz-system) above.
 
 - Accepted MIME type: `application/pdf`
 - Max size: 50 MB (enforced by backend)
-- Endpoint: `POST /uploads/pdf` (multipart, field name `pdf`)
-- Response: `{ filename }`
+- Upload endpoint: `POST /uploads/pdf` (multipart, field name `pdf`)
+- Upload response: `{ filename, originalName, size, mimetype }`
+- List endpoint: `GET /uploads/pdfs` → `FileEntry[]`
+- Delete endpoint: `DELETE /uploads/pdfs/:filename`
+- Rename endpoint: `PATCH /uploads/pdfs/:filename/rename` body `{ newDisplayName: string }`
 - Stored filename is referenced in lesson as `pdfFilename`
 - Served at `/uploads/pdfs/:filename`
 
+### FileEntry
+
+Returned by the list endpoints:
+
+```ts
+interface FileEntry {
+  filename: string;
+  sizeBytes: number;
+  uploadedAt: string;         // ISO 8601 (file mtime)
+  usedByLessons: { id: string; title: string }[];
+}
+```
+
+### Access Points
+
 Uploads can be made from:
-- The dedicated `/admin/uploads` page (video only)
-- Inline on the Edit Module page when creating a lesson
-- Inline on the Edit Lesson page when changing a lesson's file
+- The `FilePicker` component on the Edit Module page (when creating a lesson)
+- The `FilePicker` component on the Edit Lesson page (when changing a lesson's file)
+- The `/admin/content-library` page (standalone upload form per tab)

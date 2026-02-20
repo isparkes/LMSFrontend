@@ -46,7 +46,7 @@ On login or registration, the JWT and user object are stored in `localStorage`. 
 | `/courses` | Browse available courses |
 | `/courses/[courseId]` | Course detail with modules and lesson list |
 | `/courses/[courseId]/progress` | Progress tracking with per-module breakdown |
-| `/lessons/[lessonId]` | Lesson viewer — text content, video player, or interactive quiz |
+| `/lessons/[lessonId]` | Lesson viewer — text content, video player, PDF viewer, or interactive quiz |
 
 ### Admin
 
@@ -54,20 +54,21 @@ All admin routes require `role: admin`. Non-admin users are redirected.
 
 | Route | Description |
 |-------|-------------|
-| `/admin/courses` | List all courses, create new |
-| `/admin/courses/[courseId]` | Edit course, manage modules |
-| `/admin/courses/[courseId]/modules/[moduleId]` | Edit module, manage lessons |
+| `/admin/courses` | List all courses with ordering controls, create new |
+| `/admin/courses/[courseId]` | Edit course, manage modules with ordering controls |
+| `/admin/courses/[courseId]/modules/[moduleId]` | Edit module, manage lessons with ordering controls |
 | `/admin/lessons/[lessonId]` | Edit lesson content and quiz questions |
-| `/admin/uploads` | Upload video files |
+| `/admin/content-library` | Manage uploaded videos and PDFs (list, upload, rename, delete) |
 | `/admin/users` | View user list |
-| `/admin/users/[userId]` | View individual user details |
+| `/admin/users/[userId]` | View individual user details and progress |
 
 ## Lesson Types
 
 | Type | Behaviour |
 |------|-----------|
-| `text` | Renders markdown/HTML content |
-| `video` | Embeds a video player |
+| `text` | Renders HTML content with Tailwind prose styles |
+| `video` | Embeds a video player pointing to the stored file |
+| `pdf` | Embeds a PDF viewer via `<iframe>` |
 | `quiz` | Interactive quiz via `QuizPlayer` |
 
 ## Quiz Features
@@ -94,6 +95,7 @@ src/
 │   ├── api.ts              API client (fetch wrapper with JWT Bearer auth)
 │   └── auth.tsx            AuthProvider + useAuth() hook
 ├── components/
+│   ├── FilePicker.tsx       Reusable file selector (library browse + upload-new tabs)
 │   ├── Navbar.tsx           Top navigation bar (links, user name/role badge, logout)
 │   ├── ProgressBar.tsx      Reusable percentage progress bar
 │   ├── QuizPlayer.tsx       Interactive quiz component (see Quiz Features above)
@@ -107,4 +109,8 @@ src/
     ├── courses/             Learner course browsing + progress
     ├── lessons/             Lesson viewer
     └── admin/               Admin dashboard pages
+        ├── courses/         Course list and edit pages
+        ├── lessons/         Lesson edit page
+        ├── content-library/ Video and PDF library management
+        └── users/           User list and detail pages
 ```
