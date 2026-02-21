@@ -297,6 +297,7 @@ export default function LessonPage() {
               showCorrectAnswers={lesson.showCorrectAnswers !== false}
               onPassed={() => {
                 setQuizPassed(true);
+                setNextLessonLocked(false);
                 setSidebarRefreshKey((k) => k + 1);
               }}
             />
