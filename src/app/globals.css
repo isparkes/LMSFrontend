@@ -7,8 +7,11 @@
 :root {
   --brand:        #2563eb;   /* primary colour  (links, buttons, active elements) */
   --brand-dark:   #1d4ed8;   /* primary hover   (button hover, darker link hover) */
-  --brand-subtle: #eff6ff;   /* primary tint    (selected / highlighted backgrounds) */
-  --surface:      #f9fafb;   /* page background */
+  --brand-subtle: #b9595a;   /* primary tint    (selected / highlighted backgrounds) */
+  --surface:      #ad8eb0;   /* page background */
+  --panel:        #b1e4fb;   /* card / panel background (forms, sidebars, tables) */
+  --panel-alt:    #b1e4fb;   /* table headers, section headers, row hover tint */
+  --text:         #111827;   /* base body text colour */
 
   /* To use a custom font:
      1. Add @import "https://fonts.googleapis.com/css2?family=YourFont" above this block.
@@ -27,8 +30,12 @@
   --color-brand-dark:   var(--brand-dark);
   --color-brand-subtle: var(--brand-subtle);
   --color-surface:      var(--surface);
+  --color-panel:        var(--panel);
+  --color-panel-alt:    var(--panel-alt);
+  --color-text:         var(--text);
 }
 
 body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  color: var(--text);
 }
