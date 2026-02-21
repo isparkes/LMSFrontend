@@ -21,8 +21,26 @@ The backend must be running on `http://localhost:3000`. The frontend's `next.con
 ## Tech Stack
 
 - Next.js 16 (App Router) with TypeScript
-- Tailwind CSS
+- Tailwind CSS v4
 - Client-side JWT auth (stored in `localStorage`)
+
+## Skinning
+
+All colours and the body font are controlled by CSS custom properties in `src/app/globals.css`. Edit the `:root` block to rebrand without touching any component code.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `--brand` | `#2563eb` | Primary colour — links, buttons, active elements |
+| `--brand-dark` | `#1d4ed8` | Primary hover — button hover, darker link hover |
+| `--brand-subtle` | `#eff6ff` | Primary tint — selected/highlighted backgrounds |
+| `--surface` | `#f9fafb` | Page background |
+| `--panel` | `#ffffff` | Card / panel background (forms, sidebars, tables) |
+| `--panel-alt` | `#f9fafb` | Table headers, section headers, row hover tint |
+| `--text` | `#111827` | Base body text colour |
+
+To use a custom font, add a `@import` for the font at the top of `globals.css` and uncomment the `--brand-font-family` line in `:root`.
+
+The app name shown in the Navbar and browser tab title is defined in `src/lib/brand.ts` (`APP_NAME`).
 
 ## Authentication
 
@@ -54,13 +72,13 @@ All admin routes require `role: admin`. Non-admin users are redirected.
 
 | Route | Description |
 |-------|-------------|
-| `/admin/courses` | List all courses with ordering controls, create new |
-| `/admin/courses/[courseId]` | Edit course, manage modules with ordering controls |
+| `/admin/courses` | List all courses with ordering controls and enrollment badges, create new |
+| `/admin/courses/[courseId]` | Edit course (including enrollment requirement), manage modules with ordering controls |
 | `/admin/courses/[courseId]/modules/[moduleId]` | Edit module, manage lessons with ordering controls |
 | `/admin/lessons/[lessonId]` | Edit lesson content and quiz questions |
 | `/admin/content-library` | Manage uploaded videos and PDFs (list, upload, rename, delete) |
 | `/admin/users` | View user list |
-| `/admin/users/[userId]` | View individual user details and progress |
+| `/admin/users/[userId]` | View individual user details, progress, and manage course enrollments |
 
 ## Lesson Types
 
@@ -93,7 +111,8 @@ If a quiz lesson has a pass mark set and has not been passed, all subsequent les
 src/
 ├── lib/
 │   ├── api.ts              API client (fetch wrapper with JWT Bearer auth)
-│   └── auth.tsx            AuthProvider + useAuth() hook
+│   ├── auth.tsx            AuthProvider + useAuth() hook
+│   └── brand.ts            APP_NAME constant (used in Navbar and page title)
 ├── components/
 │   ├── FilePicker.tsx       Reusable file selector (library browse + upload-new tabs)
 │   ├── Navbar.tsx           Top navigation bar (links, user name/role badge, logout)

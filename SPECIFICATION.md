@@ -28,6 +28,22 @@ All data is fetched from a NestJS backend API. The frontend is stateless; authen
 
 `next.config.ts` rewrites all `/api/*` and `/uploads/*` requests to `http://localhost:3000` (the backend). The frontend must run on a different port (e.g. `npm run dev -- -p 3001`).
 
+### Skinning
+
+All colours and the body font are driven by CSS custom properties defined in the `:root` block of `src/app/globals.css`. Tailwind v4's `@theme` block maps them to utility classes (`bg-brand`, `text-brand`, `bg-panel`, etc.) used throughout the app. A developer can rebrand the app by editing only this one file.
+
+| CSS Variable | Default | Tailwind utilities generated | Purpose |
+|---|---|---|---|
+| `--brand` | `#2563eb` | `bg-brand`, `text-brand`, `border-brand` | Primary colour — links, buttons, active elements |
+| `--brand-dark` | `#1d4ed8` | `bg-brand-dark`, `text-brand-dark` | Hover/darker shade of brand |
+| `--brand-subtle` | `#eff6ff` | `bg-brand-subtle`, `border-brand-subtle` | Tinted highlight backgrounds |
+| `--surface` | `#f9fafb` | `bg-surface` | Page background |
+| `--panel` | `#ffffff` | `bg-panel` | Card / panel background (forms, sidebars, tables) |
+| `--panel-alt` | `#f9fafb` | `bg-panel-alt` | Table headers, section headers, row hover tint |
+| `--text` | `#111827` | `text-text` | Base body text colour (also applied to `body` directly) |
+
+A `--brand-font-family` variable can be uncommented in `:root` and pointed at any loaded font to change the application typeface. The app name shown in the Navbar and browser `<title>` is set in `src/lib/brand.ts` (`APP_NAME`).
+
 ### Layout
 
 Every page is wrapped in `ClientLayout`, which provides:
@@ -165,7 +181,8 @@ All admin routes are protected by `AdminLayout`, which redirects non-admin users
 
 #### Manage Courses (`/admin/courses`)
 
-- Lists all courses sorted by `ordering`, each row showing title, published/draft badge, and up/down chevron buttons (▲/▼) for reordering
+- Lists all courses sorted by `ordering`, each row showing title, published/draft badge, enrollment requirement badge, and up/down chevron buttons (▲/▼) for reordering
+- Enrollment badge: "Enrollment required" (brand-tinted) or "Open" (grey)
 - Reorder: clicking a chevron swaps the course with its neighbour and PATCHes all courses with sequential `ordering` values
 - Create course form: title (required), description (optional), ordering number
 - Delete button on each row — confirms "This will also delete all modules and lessons"
@@ -180,6 +197,7 @@ Edit form fields:
 | Thumbnail URL | text | Optional; displayed as text on course cards |
 | Description | textarea | Optional |
 | Published | checkbox | Unpublished courses show as "Draft" to learners |
+| Requires enrollment | checkbox | When enabled, only enrolled learners can access the course |
 | Order | number | Controls sort position in course list |
 
 Module management (below the edit form):
@@ -261,11 +279,18 @@ Switching tabs resets any open inline rename or delete state.
 
 #### User Detail (`/admin/users/[userId]`)
 
-Fetches `GET /users/:userId` and `GET /progress/admin/users/:userId` in parallel.
+Fetches four endpoints in parallel on load: `GET /users/:userId`, `GET /progress/admin/users/:userId`, `GET /courses`, and `GET /enrollments/user/:userId`.
 
 **User info panel:** name, email, role badge, registration date, last login date.
 
 **Change Password panel:** new password + confirm password fields (min 8 chars). Calls `PATCH /users/:userId/password` with `{ password }`.
+
+**Course Enrollments panel:** shown only when at least one course has `requireEnrollment: true`. Lists every enrollment-required course with its current enrollment status ("Enrolled" / "Not enrolled") and an action button:
+
+- **Enroll** — `POST /enrollments` with `{ userId, courseId }`. Disabled while in-flight.
+- **Unenroll** — `DELETE /enrollments/:userId/:courseId`. Disabled while in-flight.
+
+Enrollment status is determined by filtering the `/enrollments/user/:userId` response for entries with `status === "active"`.
 
 **Course Progress panels:** one collapsible panel per course. Collapsed state shows course title and overall progress bar. Expanded state shows:
 
@@ -296,6 +321,7 @@ Course
 | description | string \| null | |
 | thumbnail | string \| null | URL/text, displayed on course card |
 | isPublished | boolean | Unpublished = "Draft" |
+| requireEnrollment | boolean | When true, learners must be enrolled by an admin to access the course |
 | ordering | number | Sort position |
 
 ### Module Fields
@@ -410,7 +436,7 @@ When unauthenticated: Login and Register links.
 <ProgressBar percentage={number} className?: string />
 ```
 
-Renders a blue filled bar (Tailwind `bg-blue-600`) on a grey track. Width is set via inline `style`. Includes a CSS transition.
+Renders a filled bar using `bg-brand` on a grey track. Width is set via inline `style`. Includes a CSS transition.
 
 ### `LessonSidebar`
 
@@ -465,6 +491,9 @@ See [Quiz System](#quiz-system) above.
 | DELETE | `/progress/admin/users/:id/modules/:id` | Admin — reset module progress |
 | GET | `/users/:id` | Admin user detail |
 | PATCH | `/users/:id/password` | Admin — change user password |
+| GET | `/enrollments/user/:id` | Admin user detail — load user's enrollments |
+| POST | `/enrollments` | Admin — enroll user in a course |
+| DELETE | `/enrollments/:userId/:courseId` | Admin — unenroll user from a course |
 | GET | `/uploads/videos` | Admin — list video files in library |
 | GET | `/uploads/pdfs` | Admin — list PDF files in library |
 | POST | `/uploads/video` | Admin — upload video file |
