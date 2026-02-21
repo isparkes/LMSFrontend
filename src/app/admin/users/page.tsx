@@ -65,10 +65,10 @@ export default function AdminUsersPage() {
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="bg-panel rounded-lg shadow overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-gray-50 text-left">
+            <tr className="border-b bg-panel-alt text-left">
               <th className="px-4 py-3 font-medium text-gray-700">Name</th>
               <th className="px-4 py-3 font-medium text-gray-700">Email</th>
               <th className="px-4 py-3 font-medium text-gray-700">Role</th>
@@ -87,7 +87,7 @@ export default function AdminUsersPage() {
                 : 0;
 
               return (
-                <tr key={user.userId} className="border-b last:border-b-0 hover:bg-gray-50">
+                <tr key={user.userId} className="border-b last:border-b-0 hover:bg-panel-alt">
                   <td className="px-4 py-3">
                     {user.firstName} {user.lastName}
                   </td>

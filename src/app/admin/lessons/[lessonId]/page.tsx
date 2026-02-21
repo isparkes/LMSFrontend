@@ -246,7 +246,7 @@ export default function AdminLessonEditPage() {
 
       <form
         onSubmit={handleSave}
-        className="bg-white p-4 rounded-lg shadow mb-6 space-y-3"
+        className="bg-panel p-4 rounded-lg shadow mb-6 space-y-3"
       >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -450,7 +450,7 @@ export default function AdminLessonEditPage() {
       </form>
 
       {lesson.type === "quiz" && (
-        <div className="bg-white p-4 rounded-lg shadow">
+        <div className="bg-panel p-4 rounded-lg shadow">
           <h2 className="font-semibold text-lg mb-3">Quiz Questions</h2>
 
           <form
@@ -634,7 +634,7 @@ export default function AdminLessonEditPage() {
       )}
 
       {lesson.type === "quiz" && userAttempts.length > 0 && (
-        <div className="bg-white p-4 rounded-lg shadow mt-6">
+        <div className="bg-panel p-4 rounded-lg shadow mt-6">
           <h2 className="font-semibold text-lg mb-3">User Attempts</h2>
           <table className="w-full text-sm">
             <thead>

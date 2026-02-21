@@ -60,7 +60,7 @@ export default function CourseProgressPage() {
       </Link>
       <h1 className="text-2xl font-bold mt-2 mb-2">{progress.courseTitle}</h1>
 
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-panel rounded-lg shadow p-4 mb-6">
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Overall Progress</span>
           <span className="text-sm text-gray-600">
@@ -73,7 +73,7 @@ export default function CourseProgressPage() {
 
       <div className="space-y-4">
         {progress.modules.map((mod) => (
-          <div key={mod.moduleId} className="bg-white rounded-lg shadow">
+          <div key={mod.moduleId} className="bg-panel rounded-lg shadow">
             <div className="p-4 border-b">
               <div className="flex justify-between items-center">
                 <h2 className="font-semibold">{mod.moduleTitle}</h2>

@@ -66,7 +66,7 @@ export default function CoursesPage() {
             <Link
               key={course.id}
               href={`/courses/${course.id}`}
-              className="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden"
+              className="bg-panel rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden"
             >
               {course.thumbnail && (
                 <div className="h-40 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">

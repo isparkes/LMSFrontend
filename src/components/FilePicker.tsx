@@ -74,7 +74,7 @@ export default function FilePicker({
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
       {/* Current selection */}
-      <div className="px-3 py-2 bg-gray-50 border-b flex items-center justify-between gap-2">
+      <div className="px-3 py-2 bg-panel-alt border-b flex items-center justify-between gap-2">
         {value ? (
           <span className="font-mono text-xs text-gray-700 truncate">{value}</span>
         ) : (

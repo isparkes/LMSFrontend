@@ -194,7 +194,7 @@ export default function LessonPage() {
           </div>
 
           {lesson.type === "text" && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-panel rounded-lg shadow p-6">
               <div
                 className="prose max-w-none"
                 dangerouslySetInnerHTML={{ __html: lesson.content || "" }}
@@ -216,7 +216,7 @@ export default function LessonPage() {
           )}
 
           {lesson.type === "video" && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-panel rounded-lg shadow p-6">
               {lesson.videoFilename ? (
                 <>
                   <video
@@ -260,7 +260,7 @@ export default function LessonPage() {
           )}
 
           {lesson.type === "pdf" && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-panel rounded-lg shadow p-6">
               {lesson.pdfFilename ? (
                 <iframe
                   src={`/uploads/pdfs/${lesson.pdfFilename}`}
@@ -304,10 +304,10 @@ export default function LessonPage() {
           )}
 
           {lesson.notes && (
-            <div className="bg-white rounded-lg shadow mt-6">
+            <div className="bg-panel rounded-lg shadow mt-6">
               <button
                 onClick={() => setNotesOpen((o) => !o)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-50 rounded-lg"
+                className="w-full flex items-center justify-between px-4 py-3 text-left font-medium text-gray-700 hover:bg-panel-alt rounded-lg"
               >
                 <span>Notes</span>
                 <span className="text-gray-400 text-sm">{notesOpen ? "▲" : "▼"}</span>

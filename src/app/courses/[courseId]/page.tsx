@@ -110,7 +110,7 @@ export default function CourseDetailPage() {
             (a, b) => a.order - b.order,
           );
           return (
-            <div key={mod.id} className="bg-white rounded-lg shadow">
+            <div key={mod.id} className="bg-panel rounded-lg shadow">
               <div className="p-4 border-b">
                 <h2 className="font-semibold text-lg">{mod.title}</h2>
                 {mod.description && (
@@ -139,7 +139,7 @@ export default function CourseDetailPage() {
                     <li key={lesson.id}>
                       <Link
                         href={`/lessons/${lesson.id}?moduleId=${mod.id}&courseId=${courseId}`}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-panel-alt transition-colors"
                       >
                         <span className="text-lg">
                           {lesson.type === "video" && "🎬"}

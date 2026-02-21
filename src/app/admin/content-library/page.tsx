@@ -181,7 +181,7 @@ export default function ContentLibraryPage() {
       {/* Upload */}
       <form
         onSubmit={handleUpload}
-        className="bg-white rounded-lg shadow p-4 mb-6 flex items-center gap-3"
+        className="bg-panel rounded-lg shadow p-4 mb-6 flex items-center gap-3"
       >
         <input
           ref={fileInputRef}
@@ -214,9 +214,9 @@ export default function ContentLibraryPage() {
           No {activeTab === "videos" ? "videos" : "PDFs"} uploaded yet.
         </p>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-panel rounded-lg shadow overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-panel-alt border-b">
               <tr>
                 <th className="px-4 py-3 text-left font-medium text-gray-600">Filename</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-600">Size</th>
@@ -231,7 +231,7 @@ export default function ContentLibraryPage() {
                 const isDeleting = deletingFilename === entry.filename;
 
                 return (
-                  <tr key={entry.filename} className="hover:bg-gray-50">
+                  <tr key={entry.filename} className="hover:bg-panel-alt">
                     <td className="px-4 py-3 font-mono text-xs text-gray-700 max-w-xs">
                       <span className="truncate block" title={entry.filename}>
                         {entry.filename}

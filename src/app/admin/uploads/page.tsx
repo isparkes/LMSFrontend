@@ -47,7 +47,7 @@ export default function AdminUploadsPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow space-y-4"
+        className="bg-panel p-6 rounded-lg shadow space-y-4"
       >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

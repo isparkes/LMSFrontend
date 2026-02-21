@@ -9,6 +9,7 @@ interface Course {
   title: string;
   description: string | null;
   isPublished: boolean;
+  requiresEnrollment: boolean;
   ordering: number;
 }
 
@@ -90,7 +91,7 @@ export default function AdminCoursesPage() {
 
       <form
         onSubmit={handleCreate}
-        className="bg-white p-4 rounded-lg shadow mb-6 space-y-3"
+        className="bg-panel p-4 rounded-lg shadow mb-6 space-y-3"
       >
         <h2 className="font-semibold">Create New Course</h2>
         {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -135,12 +136,13 @@ export default function AdminCoursesPage() {
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-panel rounded-lg shadow">
           <table className="w-full text-left">
-            <thead className="border-b bg-gray-50">
+            <thead className="border-b bg-panel-alt">
               <tr>
                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Title</th>
                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Published</th>
+                <th className="px-4 py-3 text-sm font-medium text-gray-600">Enrollment</th>
                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Order</th>
                 <th className="px-4 py-3 text-sm font-medium text-gray-600">Actions</th>
               </tr>
@@ -165,6 +167,17 @@ export default function AdminCoursesPage() {
                       }`}
                     >
                       {course.isPublished ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded ${
+                        course.requiresEnrollment
+                          ? "bg-brand-subtle text-brand-dark"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {course.requiresEnrollment ? "Enrollment required" : "Open"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -199,7 +212,7 @@ export default function AdminCoursesPage() {
               ))}
               {courses.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={5} className="px-4 py-6 text-center text-gray-400">
                     No courses yet. Create one above.
                   </td>
                 </tr>

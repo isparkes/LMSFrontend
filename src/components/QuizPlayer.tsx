@@ -243,7 +243,7 @@ export default function QuizPlayer({
         const displayOptions = getDisplayOptions(q);
 
         return (
-          <div key={q.id} className="bg-white border rounded-lg p-4">
+          <div key={q.id} className="bg-panel border rounded-lg p-4">
             <p className="font-medium mb-3">
               {qi + 1}. {q.questionText}
               {isMulti && (
@@ -275,7 +275,7 @@ export default function QuizPlayer({
                     }
                   }
                 } else if (result && !shouldShowMarking && selected) {
-                  optClass = "border-gray-400 bg-gray-50";
+                  optClass = "border-gray-400 bg-panel-alt";
                 } else if (selected) {
                   optClass = "border-brand bg-brand-subtle";
                 }
@@ -369,7 +369,7 @@ export default function QuizPlayer({
       )}
 
       {attempts.length > 0 && (
-        <div className="bg-white border rounded-lg p-4">
+        <div className="bg-panel border rounded-lg p-4">
           <h3 className="font-medium mb-2">Previous Attempts ({attempts.length})</h3>
           <div className="space-y-1 text-sm">
             {attempts.map((attempt, i) => (

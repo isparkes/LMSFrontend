@@ -73,7 +73,7 @@ export default function LessonSidebar({
 
   return (
     <aside className="w-72 shrink-0 hidden lg:block">
-      <div className="sticky top-6 bg-white rounded-lg shadow overflow-hidden">
+      <div className="sticky top-6 bg-panel rounded-lg shadow overflow-hidden">
         <div className="p-4 border-b">
           <Link
             href={`/courses/${courseId}`}
@@ -93,7 +93,7 @@ export default function LessonSidebar({
         <nav className="max-h-[calc(100vh-12rem)] overflow-y-auto">
           {progress.modules.map((mod) => (
             <div key={mod.moduleId}>
-              <div className="px-4 py-2 bg-gray-50 border-b">
+              <div className="px-4 py-2 bg-panel-alt border-b">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-gray-500 uppercase truncate">
                     {mod.moduleTitle}
@@ -128,7 +128,7 @@ export default function LessonSidebar({
                         className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
                           isCurrent
                             ? "bg-brand-subtle text-brand-dark font-medium border-l-2 border-brand"
-                            : "hover:bg-gray-50 text-gray-700"
+                            : "hover:bg-panel-alt text-gray-700"
                         }`}
                       >
                         <span

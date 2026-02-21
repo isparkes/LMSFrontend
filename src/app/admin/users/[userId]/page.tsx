@@ -215,7 +215,7 @@ export default function AdminUserDetailPage() {
       {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
       {/* User Info */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-panel rounded-lg shadow p-4 mb-6">
         <h1 className="text-2xl font-bold mb-1">
           {user.firstName} {user.lastName}
         </h1>
@@ -241,7 +241,7 @@ export default function AdminUserDetailPage() {
       </div>
 
       {/* Change Password */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-panel rounded-lg shadow p-4 mb-6">
         <h2 className="font-semibold text-lg mb-3">Change Password</h2>
         <form onSubmit={handleChangePassword} className="flex gap-3 items-end">
           <div>
@@ -297,11 +297,11 @@ export default function AdminUserDetailPage() {
           return (
             <div
               key={course.courseId}
-              className="bg-white rounded-lg shadow"
+              className="bg-panel rounded-lg shadow"
             >
               <button
                 onClick={() => toggleCourse(course.courseId)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 rounded-lg"
+                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-panel-alt rounded-lg"
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <span className="font-medium truncate">
@@ -367,7 +367,7 @@ export default function AdminUserDetailPage() {
                         {mod.lessons.map((lesson) => (
                           <div
                             key={lesson.lessonId}
-                            className="flex items-center justify-between py-1.5 px-3 rounded text-sm hover:bg-gray-50"
+                            className="flex items-center justify-between py-1.5 px-3 rounded text-sm hover:bg-panel-alt"
                           >
                             <div className="flex items-center gap-2 min-w-0">
                               {lesson.completed ? (

@@ -19,6 +19,7 @@ interface Course {
   description: string | null;
   thumbnail: string | null;
   isPublished: boolean;
+  requiresEnrollment: boolean;
   ordering: number;
   modules: Module[];
 }
@@ -39,6 +40,7 @@ export default function AdminCourseEditPage() {
     description: "",
     thumbnail: "",
     isPublished: false,
+    requiresEnrollment: false,
     ordering: 0,
   });
 
@@ -58,6 +60,7 @@ export default function AdminCourseEditPage() {
           description: data.description || "",
           thumbnail: data.thumbnail || "",
           isPublished: data.isPublished,
+          requiresEnrollment: data.requiresEnrollment,
           ordering: data.ordering,
         });
       })
@@ -158,7 +161,7 @@ export default function AdminCourseEditPage() {
 
       <form
         onSubmit={handleSave}
-        className="bg-white p-4 rounded-lg shadow mb-6 space-y-3"
+        className="bg-panel p-4 rounded-lg shadow mb-6 space-y-3"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -211,6 +214,16 @@ export default function AdminCourseEditPage() {
             />
             <span className="text-sm">Published</span>
           </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.requiresEnrollment}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, requiresEnrollment: e.target.checked }))
+              }
+            />
+            <span className="text-sm">Requires enrollment</span>
+          </label>
           <div className="flex items-center gap-2">
             <label className="text-sm">Order:</label>
             <input
@@ -241,7 +254,7 @@ export default function AdminCourseEditPage() {
         </div>
       </form>
 
-      <div className="bg-white p-4 rounded-lg shadow mb-4">
+      <div className="bg-panel p-4 rounded-lg shadow mb-4">
         <h2 className="font-semibold text-lg mb-3">Modules</h2>
         <form
           onSubmit={handleCreateModule}

@@ -37,7 +37,7 @@ export default function RegisterPage() {
   return (
     <div className="max-w-md mx-auto mt-16">
       <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
+      <form onSubmit={handleSubmit} className="bg-panel p-6 rounded-lg shadow space-y-4">
         {error && (
           <p className="text-red-600 text-sm bg-red-50 p-2 rounded">{error}</p>
         )}

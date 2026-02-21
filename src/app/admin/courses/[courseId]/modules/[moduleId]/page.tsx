@@ -195,7 +195,7 @@ export default function AdminModuleEditPage() {
 
       <form
         onSubmit={handleSave}
-        className="bg-white p-4 rounded-lg shadow mb-6 space-y-3"
+        className="bg-panel p-4 rounded-lg shadow mb-6 space-y-3"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
@@ -252,7 +252,7 @@ export default function AdminModuleEditPage() {
         </div>
       </form>
 
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-panel p-4 rounded-lg shadow">
         <h2 className="font-semibold text-lg mb-3">Lessons</h2>
         <form onSubmit={handleCreateLesson} className="space-y-3 mb-4 border-b pb-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
