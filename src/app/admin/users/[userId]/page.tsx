@@ -15,6 +15,20 @@ interface UserDetail {
   lastLoginAt: string | null;
 }
 
+interface AvailableCourse {
+  id: string;
+  title: string;
+  requireEnrollment: boolean;
+}
+
+interface Enrollment {
+  userId: string;
+  courseId: string;
+  status: "active" | "completed" | "unenrolled";
+  enrolledAt: string;
+  course: { id: string; title: string };
+}
+
 interface QuizInfo {
   attemptCount: number;
   maxAttempts: number;
@@ -56,8 +70,11 @@ export default function AdminUserDetailPage() {
 
   const [user, setUser] = useState<UserDetail | null>(null);
   const [progress, setProgress] = useState<CourseDetailedProgress[]>([]);
+  const [allCourses, setAllCourses] = useState<AvailableCourse[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [enrollingCourseId, setEnrollingCourseId] = useState<string | null>(null);
 
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(
     new Set(),
@@ -75,14 +92,21 @@ export default function AdminUserDetailPage() {
   const [resettingCourseId, setResettingCourseId] = useState<string | null>(null);
   const [resettingModuleId, setResettingModuleId] = useState<string | null>(null);
 
+  const loadEnrollments = () =>
+    apiFetch<Enrollment[]>(`/enrollments/user/${userId}`).then(setEnrollments).catch(() => {});
+
   useEffect(() => {
     Promise.all([
       apiFetch<UserDetail>(`/users/${userId}`),
       apiFetch<CourseDetailedProgress[]>(`/progress/admin/users/${userId}`),
+      apiFetch<AvailableCourse[]>("/courses"),
+      apiFetch<Enrollment[]>(`/enrollments/user/${userId}`),
     ])
-      .then(([u, p]) => {
+      .then(([u, p, c, e]) => {
         setUser(u);
         setProgress(p);
+        setAllCourses(c);
+        setEnrollments(e);
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
       .finally(() => setLoading(false));
@@ -198,6 +222,36 @@ export default function AdminUserDetailPage() {
     }
   };
 
+  const handleEnroll = async (courseId: string) => {
+    setEnrollingCourseId(courseId);
+    try {
+      await apiFetch(`/enrollments`, {
+        method: "POST",
+        body: JSON.stringify({ userId, courseId }),
+      });
+      await loadEnrollments();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to enroll");
+    } finally {
+      setEnrollingCourseId(null);
+    }
+  };
+
+  const handleUnenroll = async (courseId: string) => {
+    if (!confirm("Remove this user's enrollment for this course?")) return;
+    setEnrollingCourseId(courseId);
+    try {
+      await apiFetch(`/enrollments/${userId}/${courseId}`, {
+        method: "DELETE",
+      });
+      await loadEnrollments();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to unenroll");
+    } finally {
+      setEnrollingCourseId(null);
+    }
+  };
+
   if (loading)
     return <p className="text-center py-10 text-gray-500">Loading...</p>;
   if (!user)
@@ -285,6 +339,57 @@ export default function AdminUserDetailPage() {
           <p className="text-green-600 text-sm mt-2">{passwordSuccess}</p>
         )}
       </div>
+
+      {/* Enrollments */}
+      {allCourses.some((c) => c.requireEnrollment) && (
+        <div className="bg-panel rounded-lg shadow p-4 mb-6">
+          <h2 className="font-semibold text-lg mb-3">Course Enrollments</h2>
+          <div className="space-y-2">
+            {allCourses
+              .filter((c) => c.requireEnrollment)
+              .map((course) => {
+                const enrolled = enrollments.some((e) => e.courseId === course.id && e.status === "active");
+                const busy = enrollingCourseId === course.id;
+                return (
+                  <div
+                    key={course.id}
+                    className="flex items-center justify-between py-2 px-3 rounded border"
+                  >
+                    <span className="text-sm font-medium">{course.title}</span>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded ${
+                          enrolled
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {enrolled ? "Enrolled" : "Not enrolled"}
+                      </span>
+                      {enrolled ? (
+                        <button
+                          onClick={() => handleUnenroll(course.id)}
+                          disabled={busy}
+                          className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
+                        >
+                          {busy ? "Removing..." : "Unenroll"}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEnroll(course.id)}
+                          disabled={busy}
+                          className="text-brand hover:text-brand-dark text-xs disabled:opacity-50"
+                        >
+                          {busy ? "Enrolling..." : "Enroll"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       {/* Course Progress */}
       <div className="space-y-4">

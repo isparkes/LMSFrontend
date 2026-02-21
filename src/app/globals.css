@@ -8,9 +8,9 @@
   --brand:        #2563eb;   /* primary colour  (links, buttons, active elements) */
   --brand-dark:   #1d4ed8;   /* primary hover   (button hover, darker link hover) */
   --brand-subtle: #b9595a;   /* primary tint    (selected / highlighted backgrounds) */
-  --surface:      #ad8eb0;   /* page background */
-  --panel:        #b1e4fb;   /* card / panel background (forms, sidebars, tables) */
-  --panel-alt:    #b1e4fb;   /* table headers, section headers, row hover tint */
+  --surface:      #ffffff;   /* page background */
+  --panel:        #ffffff;   /* card / panel background (forms, sidebars, tables) */
+  --panel-alt:    #ffffff;   /* table headers, section headers, row hover tint */
   --text:         #111827;   /* base body text colour */
 
   /* To use a custom font:
