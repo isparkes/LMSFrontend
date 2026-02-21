@@ -126,7 +126,7 @@ export default function AdminCoursesPage() {
         <button
           type="submit"
           disabled={creating}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark disabled:opacity-50"
         >
           {creating ? "Creating..." : "Create Course"}
         </button>
@@ -151,7 +151,7 @@ export default function AdminCoursesPage() {
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/courses/${course.id}`}
-                      className="text-blue-600 hover:underline font-medium"
+                      className="text-brand hover:underline font-medium"
                     >
                       {course.title}
                     </Link>

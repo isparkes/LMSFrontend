@@ -54,7 +54,7 @@ export default function CourseProgressPage() {
     <div>
       <Link
         href={`/courses/${courseId}`}
-        className="text-blue-600 hover:underline text-sm"
+        className="text-brand hover:underline text-sm"
       >
         &larr; Back to course
       </Link>
@@ -110,7 +110,7 @@ export default function CourseProgressPage() {
                     </span>
                     <Link
                       href={`/lessons/${lesson.lessonId}`}
-                      className="hover:text-blue-600"
+                      className="hover:text-brand"
                     >
                       {lesson.lessonTitle}
                     </Link>

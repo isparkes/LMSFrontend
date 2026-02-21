@@ -207,7 +207,7 @@ export default function AdminUserDetailPage() {
     <div>
       <Link
         href="/admin/users"
-        className="text-blue-600 hover:text-blue-800 text-sm mb-4 inline-block"
+        className="text-brand hover:text-brand-dark text-sm mb-4 inline-block"
       >
         &larr; Back to Users
       </Link>
@@ -273,7 +273,7 @@ export default function AdminUserDetailPage() {
           <button
             type="submit"
             disabled={changingPassword}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 text-sm"
+            className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark disabled:opacity-50 text-sm"
           >
             {changingPassword ? "Changing..." : "Change Password"}
           </button>
@@ -310,7 +310,7 @@ export default function AdminUserDetailPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="bg-gray-200 rounded-full h-2 w-24">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        className="bg-brand h-2 rounded-full transition-all"
                         style={{ width: `${course.progressPercentage}%` }}
                       />
                     </div>
@@ -387,7 +387,7 @@ export default function AdminUserDetailPage() {
                                   lesson.lessonType === "quiz"
                                     ? "bg-yellow-100 text-yellow-700"
                                     : lesson.lessonType === "video"
-                                      ? "bg-blue-100 text-blue-700"
+                                      ? "bg-brand-subtle text-brand-dark"
                                       : lesson.lessonType === "pdf"
                                         ? "bg-red-100 text-red-700"
                                         : "bg-gray-100 text-gray-600"

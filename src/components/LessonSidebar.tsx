@@ -77,7 +77,7 @@ export default function LessonSidebar({
         <div className="p-4 border-b">
           <Link
             href={`/courses/${courseId}`}
-            className="font-semibold text-sm hover:text-blue-600 line-clamp-2"
+            className="font-semibold text-sm hover:text-brand line-clamp-2"
           >
             {progress.courseTitle}
           </Link>
@@ -127,7 +127,7 @@ export default function LessonSidebar({
                         href={`/lessons/${lesson.lessonId}?moduleId=${mod.moduleId}&courseId=${courseId}`}
                         className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
                           isCurrent
-                            ? "bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-600"
+                            ? "bg-brand-subtle text-brand-dark font-medium border-l-2 border-brand"
                             : "hover:bg-gray-50 text-gray-700"
                         }`}
                       >
@@ -136,7 +136,7 @@ export default function LessonSidebar({
                             lesson.completed
                               ? "bg-green-500 text-white"
                               : isCurrent
-                                ? "bg-blue-200 border border-blue-400"
+                                ? "bg-brand-subtle border border-brand"
                                 : "bg-gray-200"
                           }`}
                         >

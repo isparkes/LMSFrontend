@@ -98,7 +98,7 @@ export default function FilePicker({
           onClick={() => setMode("library")}
           className={`px-3 py-2 border-b-2 -mb-px transition-colors ${
             mode === "library"
-              ? "border-blue-600 text-blue-600"
+              ? "border-brand text-brand"
               : "border-transparent text-gray-500 hover:text-gray-700"
           }`}
         >
@@ -109,7 +109,7 @@ export default function FilePicker({
           onClick={() => setMode("upload")}
           className={`px-3 py-2 border-b-2 -mb-px transition-colors ${
             mode === "upload"
-              ? "border-blue-600 text-blue-600"
+              ? "border-brand text-brand"
               : "border-transparent text-gray-500 hover:text-gray-700"
           }`}
         >
@@ -145,9 +145,9 @@ export default function FilePicker({
                     <button
                       type="button"
                       onClick={() => onChange(f.filename)}
-                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-2 hover:bg-blue-50 transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-2 hover:bg-brand-subtle transition-colors ${
                         value === f.filename
-                          ? "bg-blue-50 text-blue-700 font-medium"
+                          ? "bg-brand-subtle text-brand-dark font-medium"
                           : "text-gray-700"
                       }`}
                     >
@@ -179,7 +179,7 @@ export default function FilePicker({
             className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
           />
           {uploading && (
-            <p className="text-xs text-blue-600">Uploading…</p>
+            <p className="text-xs text-brand">Uploading…</p>
           )}
           <p className="text-xs text-gray-400">
             {type === "video"

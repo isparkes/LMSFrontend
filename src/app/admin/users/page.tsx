@@ -116,7 +116,7 @@ export default function AdminUsersPage() {
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-[120px]">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
+                            className="bg-brand h-2 rounded-full transition-all"
                             style={{ width: `${overallPct}%` }}
                           />
                         </div>
@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/users/${user.userId}`}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
+                      className="text-brand hover:text-brand-dark text-sm"
                     >
                       View
                     </Link>

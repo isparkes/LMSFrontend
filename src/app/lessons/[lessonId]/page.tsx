@@ -186,7 +186,7 @@ export default function LessonPage() {
             {courseId && (
               <Link
                 href={`/courses/${courseId}`}
-                className="text-blue-600 hover:text-blue-800 text-sm"
+                className="text-brand hover:text-brand-dark text-sm"
               >
                 Back to Course
               </Link>
@@ -315,7 +315,7 @@ export default function LessonPage() {
               {notesOpen && (
                 <div className="px-4 pb-4">
                   <div
-                    className="prose max-w-none [&_a]:text-blue-600 [&_a]:underline [&_a]:break-all"
+                    className="prose max-w-none [&_a]:text-brand [&_a]:underline [&_a]:break-all"
                     dangerouslySetInnerHTML={{ __html: renderNotes(lesson.notes) }}
                     onClick={(e) => {
                       const target = e.target as HTMLElement;
@@ -349,7 +349,7 @@ export default function LessonPage() {
                 {prevLesson ? (
                   <Link
                     href={`/lessons/${prevLesson.id}${navQuery(prevLesson)}`}
-                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
+                    className="flex items-center gap-2 text-brand hover:text-brand-dark"
                   >
                     <span aria-hidden="true">&larr;</span>
                     <span className="text-sm">{prevLesson.title}</span>
@@ -370,7 +370,7 @@ export default function LessonPage() {
                   ) : (
                     <Link
                       href={`/lessons/${nextLesson.id}${navQuery(nextLesson)}`}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
+                      className="flex items-center gap-2 text-brand hover:text-brand-dark"
                     >
                       <span className="text-sm">{nextLesson.title}</span>
                       <span aria-hidden="true">&rarr;</span>

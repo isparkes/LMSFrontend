@@ -185,7 +185,7 @@ export default function AdminModuleEditPage() {
     <div>
       <Link
         href={`/admin/courses/${courseId}`}
-        className="text-blue-600 hover:underline text-sm"
+        className="text-brand hover:underline text-sm"
       >
         &larr; Back to course
       </Link>
@@ -242,7 +242,7 @@ export default function AdminModuleEditPage() {
           <button
             type="submit"
             disabled={saving}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -451,7 +451,7 @@ export default function AdminModuleEditPage() {
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/admin/lessons/${lesson.id}?moduleId=${moduleId}`}
-                  className="text-blue-600 hover:underline font-medium"
+                  className="text-brand hover:underline font-medium"
                 >
                   {lesson.title}
                 </Link>

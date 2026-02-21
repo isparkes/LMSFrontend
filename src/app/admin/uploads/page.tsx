@@ -69,7 +69,7 @@ export default function AdminUploadsPage() {
         <button
           type="submit"
           disabled={uploading || !file}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-brand text-white px-6 py-2 rounded hover:bg-brand-dark disabled:opacity-50"
         >
           {uploading ? "Uploading..." : "Upload"}
         </button>

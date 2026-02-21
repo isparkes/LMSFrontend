@@ -51,7 +51,7 @@ export default function RegisterPage() {
               required
               value={form.firstName}
               onChange={update("firstName")}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
           <div>
@@ -63,7 +63,7 @@ export default function RegisterPage() {
               required
               value={form.lastName}
               onChange={update("lastName")}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function RegisterPage() {
             required
             value={form.email}
             onChange={update("email")}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand"
           />
         </div>
         <div>
@@ -89,20 +89,20 @@ export default function RegisterPage() {
             minLength={8}
             value={form.password}
             onChange={update("password")}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand"
           />
           <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-brand text-white py-2 rounded hover:bg-brand-dark disabled:opacity-50"
         >
           {loading ? "Registering..." : "Register"}
         </button>
         <p className="text-sm text-center text-gray-600">
           Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-brand hover:underline">
             Login
           </Link>
         </p>

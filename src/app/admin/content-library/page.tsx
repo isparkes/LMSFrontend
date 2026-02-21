@@ -160,7 +160,7 @@ export default function ContentLibraryPage() {
             onClick={() => switchTab(tab)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab
-                ? "border-blue-600 text-blue-600"
+                ? "border-brand text-brand"
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
@@ -197,7 +197,7 @@ export default function ContentLibraryPage() {
         <button
           type="submit"
           disabled={!uploadFile || uploading}
-          className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
+          className="bg-brand text-white px-4 py-2 rounded text-sm hover:bg-brand-dark disabled:opacity-50 whitespace-nowrap"
         >
           {uploading ? "Uploading…" : `Upload ${activeTab === "videos" ? "Video" : "PDF"}`}
         </button>
@@ -252,7 +252,7 @@ export default function ContentLibraryPage() {
                             <span
                               key={l.id}
                               title={l.title}
-                              className="text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded px-1.5 py-0.5 max-w-[140px] truncate inline-block"
+                              className="text-xs bg-brand-subtle text-brand-dark border border-brand-subtle rounded px-1.5 py-0.5 max-w-[140px] truncate inline-block"
                             >
                               {l.title}
                             </span>
@@ -280,7 +280,7 @@ export default function ContentLibraryPage() {
                           <button
                             onClick={() => handleRename(entry.filename)}
                             disabled={renaming || !renameValue.trim()}
-                            className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
+                            className="text-xs bg-brand text-white px-2 py-1 rounded hover:bg-brand-dark disabled:opacity-50"
                           >
                             {renaming ? "Saving…" : "Save"}
                           </button>
@@ -327,7 +327,7 @@ export default function ContentLibraryPage() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => startRename(entry.filename)}
-                            className="text-xs text-blue-600 hover:text-blue-800"
+                            className="text-xs text-brand hover:text-brand-dark"
                           >
                             Rename
                           </button>

@@ -259,7 +259,7 @@ export default function QuizPlayer({
                   : answers[q.id] === oi;
 
                 const shouldShowMarking = result?.showCorrectAnswers !== false;
-                let optClass = "border-gray-300 hover:border-blue-400";
+                let optClass = "border-gray-300 hover:border-brand";
                 if (result && questionResult && shouldShowMarking) {
                   if (isMulti && correctSet) {
                     if (correctSet.has(oi)) {
@@ -277,7 +277,7 @@ export default function QuizPlayer({
                 } else if (result && !shouldShowMarking && selected) {
                   optClass = "border-gray-400 bg-gray-50";
                 } else if (selected) {
-                  optClass = "border-blue-500 bg-blue-50";
+                  optClass = "border-brand bg-brand-subtle";
                 }
 
                 return (
@@ -295,7 +295,7 @@ export default function QuizPlayer({
                       <span
                         className={`w-4 h-4 border rounded-sm flex-shrink-0 flex items-center justify-center ${
                           selected
-                            ? "bg-blue-600 border-blue-600 text-white"
+                            ? "bg-brand border-brand text-white"
                             : "border-gray-400"
                         }`}
                       >
@@ -305,7 +305,7 @@ export default function QuizPlayer({
                       <span
                         className={`w-4 h-4 border rounded-full flex-shrink-0 ${
                           selected
-                            ? "border-blue-600 border-4"
+                            ? "border-brand border-4"
                             : "border-gray-400"
                         }`}
                       />
@@ -350,7 +350,7 @@ export default function QuizPlayer({
           {!attemptsExhausted && (
             <button
               onClick={handleRetry}
-              className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="mt-3 bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark"
             >
               Retry Quiz
             </button>
@@ -361,7 +361,7 @@ export default function QuizPlayer({
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-brand text-white px-6 py-2 rounded hover:bg-brand-dark disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Answers"}
           </button>
