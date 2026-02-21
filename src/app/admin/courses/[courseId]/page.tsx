@@ -19,7 +19,7 @@ interface Course {
   description: string | null;
   thumbnail: string | null;
   isPublished: boolean;
-  requiresEnrollment: boolean;
+  requireEnrollment: boolean;
   ordering: number;
   modules: Module[];
 }
@@ -40,7 +40,7 @@ export default function AdminCourseEditPage() {
     description: "",
     thumbnail: "",
     isPublished: false,
-    requiresEnrollment: false,
+    requireEnrollment: false,
     ordering: 0,
   });
 
@@ -60,7 +60,7 @@ export default function AdminCourseEditPage() {
           description: data.description || "",
           thumbnail: data.thumbnail || "",
           isPublished: data.isPublished,
-          requiresEnrollment: data.requiresEnrollment,
+          requireEnrollment: data.requireEnrollment ?? false,
           ordering: data.ordering,
         });
       })
@@ -217,9 +217,9 @@ export default function AdminCourseEditPage() {
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={form.requiresEnrollment}
+              checked={form.requireEnrollment}
               onChange={(e) =>
-                setForm((f) => ({ ...f, requiresEnrollment: e.target.checked }))
+                setForm((f) => ({ ...f, requireEnrollment: e.target.checked }))
               }
             />
             <span className="text-sm">Requires enrollment</span>

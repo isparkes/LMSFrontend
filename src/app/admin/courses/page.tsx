@@ -9,7 +9,7 @@ interface Course {
   title: string;
   description: string | null;
   isPublished: boolean;
-  requiresEnrollment: boolean;
+  requireEnrollment: boolean;
   ordering: number;
 }
 
@@ -172,12 +172,12 @@ export default function AdminCoursesPage() {
                   <td className="px-4 py-3">
                     <span
                       className={`text-xs px-2 py-0.5 rounded ${
-                        course.requiresEnrollment
+                        course.requireEnrollment
                           ? "bg-brand-subtle text-brand-dark"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {course.requiresEnrollment ? "Enrollment required" : "Open"}
+                      {course.requireEnrollment ? "Enrollment required" : "Open"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
