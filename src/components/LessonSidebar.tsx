@@ -42,12 +42,38 @@ export default function LessonSidebar({
   refreshKey,
 }: LessonSidebarProps) {
   const [progress, setProgress] = useState<CourseProgress | null>(null);
+  const [collapsedModules, setCollapsedModules] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     apiFetch<CourseProgress>(`/progress/courses/${courseId}`)
       .then(setProgress)
       .catch(() => {});
   }, [courseId, refreshKey]);
+
+  // Collapse all modules except the one containing the current lesson
+  useEffect(() => {
+    if (!progress) return;
+    const initial = new Set<string>();
+    for (const mod of progress.modules) {
+      const hasCurrentLesson = mod.lessons.some(l => l.lessonId === currentLessonId);
+      if (!hasCurrentLesson) {
+        initial.add(mod.moduleId);
+      }
+    }
+    setCollapsedModules(initial);
+  }, [progress, currentLessonId]);
+
+  const toggleModule = (moduleId: string) => {
+    setCollapsedModules(prev => {
+      const next = new Set(prev);
+      if (next.has(moduleId)) {
+        next.delete(moduleId);
+      } else {
+        next.add(moduleId);
+      }
+      return next;
+    });
+  };
 
   // Build a set of locked lesson IDs based on quiz gates
   const lockedLessons = new Set<string>();
@@ -91,18 +117,27 @@ export default function LessonSidebar({
         </div>
 
         <nav className="max-h-[calc(100vh-12rem)] overflow-y-auto">
-          {progress.modules.map((mod) => (
+          {progress.modules.map((mod) => {
+            const isCollapsed = collapsedModules.has(mod.moduleId);
+            return (
             <div key={mod.moduleId}>
-              <div className="px-4 py-2 bg-panel-alt border-b">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-500 uppercase truncate">
-                    {mod.moduleTitle}
-                  </span>
-                  <span className="text-xs text-gray-400 shrink-0 ml-2">
+              <button
+                onClick={() => toggleModule(mod.moduleId)}
+                className="w-full px-4 py-2 bg-panel-alt border-b flex items-center justify-between text-left hover:bg-gray-100 transition-colors"
+              >
+                <span className="text-xs font-semibold text-gray-500 uppercase truncate">
+                  {mod.moduleTitle}
+                </span>
+                <div className="flex items-center gap-2 shrink-0 ml-2">
+                  <span className="text-xs text-gray-400">
                     {mod.completedLessons}/{mod.totalLessons}
                   </span>
+                  <span className="text-gray-400 text-[10px]">
+                    {isCollapsed ? "▶" : "▼"}
+                  </span>
                 </div>
-              </div>
+              </button>
+              {!isCollapsed && (
               <ul className="divide-y divide-gray-100">
                 {mod.lessons.map((lesson) => {
                   const isCurrent = lesson.lessonId === currentLessonId;
@@ -148,8 +183,10 @@ export default function LessonSidebar({
                   );
                 })}
               </ul>
+              )}
             </div>
-          ))}
+            );
+          })}
         </nav>
       </div>
     </aside>

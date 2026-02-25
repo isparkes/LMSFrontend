@@ -121,6 +121,10 @@ export default function AdminLessonEditPage() {
         allowRetryAfterPass: data.allowRetryAfterPass || false,
         prerequisiteLessonId: data.prerequisiteLessonId || "",
       });
+      const nextQuestionOrder = data.quizQuestions && data.quizQuestions.length > 0
+        ? Math.max(...data.quizQuestions.map(q => q.order)) + 1
+        : 0;
+      setQuestionForm(f => ({ ...f, order: nextQuestionOrder }));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load lesson");
     } finally {
@@ -249,14 +253,14 @@ export default function AdminLessonEditPage() {
         method: "POST",
         body: JSON.stringify(questionForm),
       });
-      setQuestionForm({
+      setQuestionForm(f => ({
+        ...f,
         questionText: "",
         options: ["", ""],
         correctOptionIndex: 0,
         multiSelect: false,
         correctOptionIndices: [],
-        order: 0,
-      });
+      }));
       loadLesson();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create question");

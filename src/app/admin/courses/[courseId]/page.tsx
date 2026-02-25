@@ -63,6 +63,10 @@ export default function AdminCourseEditPage() {
           requireEnrollment: data.requireEnrollment ?? false,
           ordering: data.ordering,
         });
+        const nextModuleOrder = data.modules.length > 0
+          ? Math.max(...data.modules.map(m => m.order)) + 1
+          : 0;
+        setModuleForm(f => ({ ...f, order: nextModuleOrder }));
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -99,7 +103,7 @@ export default function AdminCourseEditPage() {
         method: "POST",
         body: JSON.stringify(moduleForm),
       });
-      setModuleForm({ title: "", description: "", order: 0 });
+      setModuleForm(f => ({ ...f, title: "", description: "" }));
       loadCourse();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create module");

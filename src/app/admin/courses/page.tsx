@@ -22,7 +22,11 @@ export default function AdminCoursesPage() {
 
   const loadCourses = () => {
     apiFetch<Course[]>("/courses")
-      .then(setCourses)
+      .then((data) => {
+        setCourses(data);
+        const nextOrder = data.length > 0 ? Math.max(...data.map(c => c.ordering)) + 1 : 0;
+        setForm(f => ({ ...f, ordering: nextOrder }));
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   };
@@ -40,7 +44,7 @@ export default function AdminCoursesPage() {
         method: "POST",
         body: JSON.stringify(form),
       });
-      setForm({ title: "", description: "", ordering: 0 });
+      setForm(f => ({ ...f, title: "", description: "" }));
       loadCourses();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create course");

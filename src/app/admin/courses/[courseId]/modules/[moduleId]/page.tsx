@@ -58,6 +58,10 @@ export default function AdminModuleEditPage() {
           description: data.description || "",
           order: data.order,
         });
+        const nextLessonOrder = data.lessons && data.lessons.length > 0
+          ? Math.max(...data.lessons.map(l => l.order)) + 1
+          : 0;
+        setLessonForm(f => ({ ...f, order: nextLessonOrder }));
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -114,10 +118,10 @@ export default function AdminModuleEditPage() {
         method: "POST",
         body: JSON.stringify(body),
       });
-      setLessonForm({
+      setLessonForm(f => ({
+        ...f,
         title: "",
         type: "text",
-        order: 0,
         notes: "",
         content: "",
         videoFilename: "",
@@ -127,7 +131,7 @@ export default function AdminModuleEditPage() {
         randomizeQuestions: false,
         randomizeAnswers: false,
         showCorrectAnswers: true,
-      });
+      }));
       loadModule();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create lesson");
