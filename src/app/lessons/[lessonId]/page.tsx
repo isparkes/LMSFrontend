@@ -29,6 +29,7 @@ interface Lesson {
   randomizeAnswers: boolean;
   showCorrectAnswers: boolean;
   allowRetryAfterPass: boolean;
+  prerequisiteLesson: { id: string; title: string; moduleId: string } | null;
   moduleId: string;
   quizQuestions: QuizQuestion[];
 }
@@ -56,6 +57,7 @@ export default function LessonPage() {
   const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const [nextLessonLocked, setNextLessonLocked] = useState(false);
+  const [prerequisiteCompleted, setPrerequisiteCompleted] = useState(true);
 
   useEffect(() => {
     if (!moduleId) {
@@ -71,6 +73,7 @@ export default function LessonPage() {
     setPrevLesson(null);
     setNextLesson(null);
     setNextLessonLocked(false);
+    setPrerequisiteCompleted(true);
 
     const fetchLesson = apiFetch<Lesson>(`/modules/${moduleId}/lessons/${lessonId}`);
 
@@ -105,9 +108,13 @@ export default function LessonPage() {
           }[];
         }>(`/progress/courses/${courseId}`).then((progress) => {
           const lockedSet = new Set<string>();
+          const completedSet = new Set<string>();
           let blocked = false;
           for (const mod of progress.modules) {
             for (const l of mod.lessons) {
+              if (l.completed) {
+                completedSet.add(l.lessonId);
+              }
               if (l.lessonId === lessonId && l.completed) {
                 setQuizPassed(true);
               }
@@ -122,13 +129,16 @@ export default function LessonPage() {
             }
           }
           // We'll check if next lesson is locked after nav is resolved
-          return lockedSet;
-        }).catch(() => new Set<string>())
-      : Promise.resolve(new Set<string>());
+          return { lockedSet, completedSet };
+        }).catch(() => ({ lockedSet: new Set<string>(), completedSet: new Set<string>() }))
+      : Promise.resolve({ lockedSet: new Set<string>(), completedSet: new Set<string>() });
 
     Promise.all([fetchLesson, fetchNav, fetchProgress])
-      .then(([lessonData, navData, lockedSet]) => {
+      .then(([lessonData, navData, { lockedSet, completedSet }]) => {
         setLesson(lessonData);
+        if (lessonData.prerequisiteLesson) {
+          setPrerequisiteCompleted(completedSet.has(lessonData.prerequisiteLesson.id));
+        }
         if (navData) {
           setPrevLesson(navData.prev);
           setNextLesson(navData.next);
@@ -193,6 +203,25 @@ export default function LessonPage() {
               </Link>
             )}
           </div>
+
+          {!prerequisiteCompleted && lesson.prerequisiteLesson && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+              <span className="text-amber-500 text-lg leading-none mt-0.5">&#9888;</span>
+              <div>
+                <p className="text-amber-800 font-medium text-sm">Prerequisite not completed</p>
+                <p className="text-amber-700 text-sm mt-1">
+                  Complete{" "}
+                  <Link
+                    href={`/lessons/${lesson.prerequisiteLesson.id}?moduleId=${lesson.prerequisiteLesson.moduleId}${courseId ? `&courseId=${courseId}` : ""}`}
+                    className="underline font-medium"
+                  >
+                    {lesson.prerequisiteLesson.title}
+                  </Link>{" "}
+                  before this lesson.
+                </p>
+              </div>
+            </div>
+          )}
 
           {lesson.type === "text" && (
             <div className="bg-panel rounded-lg shadow p-6">

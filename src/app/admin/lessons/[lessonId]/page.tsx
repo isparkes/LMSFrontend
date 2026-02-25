@@ -15,6 +15,11 @@ interface QuizQuestion {
   order: number;
 }
 
+interface PrerequisiteLesson {
+  id: string;
+  title: string;
+}
+
 interface Lesson {
   id: string;
   title: string;
@@ -30,6 +35,8 @@ interface Lesson {
   randomizeAnswers: boolean;
   showCorrectAnswers: boolean;
   allowRetryAfterPass: boolean;
+  prerequisiteLessonId: string | null;
+  prerequisiteLesson: PrerequisiteLesson | null;
   moduleId: string;
   quizQuestions: QuizQuestion[];
 }
@@ -48,12 +55,17 @@ export default function AdminLessonEditPage() {
   const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
   const moduleId = searchParams.get("moduleId") || "";
+  const courseId = searchParams.get("courseId") || "";
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [courseLessons, setCourseLessons] = useState<
+    { moduleTitle: string; lessons: { id: string; title: string }[] }[]
+  >([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -68,6 +80,7 @@ export default function AdminLessonEditPage() {
     randomizeAnswers: false,
     showCorrectAnswers: true,
     allowRetryAfterPass: false,
+    prerequisiteLessonId: "",
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -106,6 +119,7 @@ export default function AdminLessonEditPage() {
         randomizeAnswers: data.randomizeAnswers || false,
         showCorrectAnswers: data.showCorrectAnswers !== false,
         allowRetryAfterPass: data.allowRetryAfterPass || false,
+        prerequisiteLessonId: data.prerequisiteLessonId || "",
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load lesson");
@@ -125,9 +139,34 @@ export default function AdminLessonEditPage() {
     }
   };
 
+  const loadCourseLessons = async () => {
+    if (!courseId) return;
+    try {
+      const course = await apiFetch<{
+        modules: {
+          title: string;
+          order: number;
+          lessons: { id: string; title: string; order: number }[];
+        }[];
+      }>(`/courses/${courseId}`);
+      const sorted = [...course.modules].sort((a, b) => a.order - b.order);
+      setCourseLessons(
+        sorted.map((m) => ({
+          moduleTitle: m.title,
+          lessons: [...m.lessons]
+            .sort((a, b) => a.order - b.order)
+            .filter((l) => l.id !== lessonId),
+        })),
+      );
+    } catch {
+      // silently ignore — dropdown just won't be populated
+    }
+  };
+
   useEffect(() => {
     loadLesson();
     loadUserAttempts();
+    loadCourseLessons();
   }, [lessonId, moduleId]);
 
   const handleResetAttempts = async (userId: string) => {
@@ -150,7 +189,11 @@ export default function AdminLessonEditPage() {
     setSaving(true);
     setError("");
     try {
-      const body: Record<string, unknown> = { title: form.title, notes: form.notes || null };
+      const body: Record<string, unknown> = {
+        title: form.title,
+        notes: form.notes || null,
+        prerequisiteLessonId: form.prerequisiteLessonId || null,
+      };
       if (lesson?.type === "text") body.content = form.content;
       if (lesson?.type === "video") body.videoFilename = form.videoFilename;
       if (lesson?.type === "pdf") body.pdfFilename = form.pdfFilename;
@@ -483,6 +526,47 @@ export default function AdminLessonEditPage() {
             </p>
           </div>
         )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Prerequisite Lesson
+          </label>
+          <select
+            value={form.prerequisiteLessonId}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, prerequisiteLessonId: e.target.value }))
+            }
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
+            <option value="">None</option>
+            {courseLessons.map((mod) =>
+              mod.lessons.length > 0 ? (
+                <optgroup key={mod.moduleTitle} label={mod.moduleTitle}>
+                  {mod.lessons.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.title}
+                    </option>
+                  ))}
+                </optgroup>
+              ) : null,
+            )}
+          </select>
+          {!courseId && lesson?.prerequisiteLesson && (
+            <p className="text-xs text-gray-500 mt-1">
+              Current prerequisite: <strong>{lesson.prerequisiteLesson.title}</strong>.
+              Open this lesson from the module editor to change it.
+            </p>
+          )}
+          {!courseId && !lesson?.prerequisiteLesson && (
+            <p className="text-xs text-gray-400 mt-1">
+              Open this lesson from the module editor to assign a prerequisite.
+            </p>
+          )}
+          {courseId && (
+            <p className="text-xs text-gray-500 mt-1">
+              Learners will be reminded to complete the prerequisite before this lesson.
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <button
             type="submit"

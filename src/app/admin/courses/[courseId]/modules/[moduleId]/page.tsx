@@ -450,7 +450,7 @@ export default function AdminModuleEditPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <Link
-                  href={`/admin/lessons/${lesson.id}?moduleId=${moduleId}`}
+                  href={`/admin/lessons/${lesson.id}?moduleId=${moduleId}&courseId=${courseId}`}
                   className="text-brand hover:underline font-medium"
                 >
                   {lesson.title}
