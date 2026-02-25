@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   experimental: {
     serverActions: {
       bodySizeLimit: "100mb",
@@ -8,14 +9,15 @@ const nextConfig: NextConfig = {
     middlewareClientMaxBodySize: "100mb",
   },
   async rewrites() {
+    const backendUrl = process.env.BACKEND_URL ?? "http://localhost:3000";
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:3000/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
       },
       {
         source: "/uploads/:path*",
-        destination: "http://localhost:3000/uploads/:path*",
+        destination: `${backendUrl}/uploads/:path*`,
       },
     ];
   },
