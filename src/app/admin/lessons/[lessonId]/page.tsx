@@ -25,6 +25,7 @@ interface Lesson {
   notes: string | null;
   passMarkPercentage: number;
   maxAttempts: number;
+  questionsToShow: number;
   randomizeQuestions: boolean;
   randomizeAnswers: boolean;
   showCorrectAnswers: boolean;
@@ -61,6 +62,7 @@ export default function AdminLessonEditPage() {
     pdfFilename: "",
     passMarkPercentage: 0,
     maxAttempts: 0,
+    questionsToShow: 0,
     randomizeQuestions: false,
     randomizeAnswers: false,
     showCorrectAnswers: true,
@@ -86,7 +88,7 @@ export default function AdminLessonEditPage() {
     }
     try {
       const data = await apiFetch<Lesson>(
-        `/modules/${moduleId}/lessons/${lessonId}`,
+        `/modules/${moduleId}/lessons/${lessonId}/admin`,
       );
       setLesson(data);
       setForm({
@@ -97,6 +99,7 @@ export default function AdminLessonEditPage() {
         pdfFilename: data.pdfFilename || "",
         passMarkPercentage: data.passMarkPercentage || 0,
         maxAttempts: data.maxAttempts || 0,
+        questionsToShow: data.questionsToShow || 0,
         randomizeQuestions: data.randomizeQuestions || false,
         randomizeAnswers: data.randomizeAnswers || false,
         showCorrectAnswers: data.showCorrectAnswers !== false,
@@ -151,6 +154,7 @@ export default function AdminLessonEditPage() {
       if (lesson?.type === "quiz") {
         body.passMarkPercentage = form.passMarkPercentage;
         body.maxAttempts = form.maxAttempts;
+        body.questionsToShow = form.questionsToShow;
         body.randomizeQuestions = form.randomizeQuestions;
         body.randomizeAnswers = form.randomizeAnswers;
         body.showCorrectAnswers = form.showCorrectAnswers;
@@ -397,6 +401,28 @@ export default function AdminLessonEditPage() {
             <p className="text-xs text-gray-500 mt-1">
               When enabled, questions are presented in a random order for each attempt.
             </p>
+            {form.randomizeQuestions && (
+              <div className="mt-3 ml-6 border-l-2 border-gray-200 pl-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Questions to Show
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={form.questionsToShow}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      questionsToShow: parseInt(e.target.value) || 0,
+                    }))
+                  }
+                  className="w-32 border border-gray-300 rounded px-3 py-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Set to 0 to show all questions. When set, randomly samples this many questions from the bank per attempt. Score is calculated out of the sampled count.
+                </p>
+              </div>
+            )}
           </div>
         )}
         {lesson.type === "quiz" && (
@@ -583,7 +609,7 @@ export default function AdminLessonEditPage() {
             </button>
           </form>
 
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
             {sortedQuestions.map((q, qi) => (
               <div key={q.id} className="border rounded p-3">
                 <div className="flex justify-between items-start">
