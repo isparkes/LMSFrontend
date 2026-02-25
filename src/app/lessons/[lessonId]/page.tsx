@@ -28,6 +28,7 @@ interface Lesson {
   randomizeQuestions: boolean;
   randomizeAnswers: boolean;
   showCorrectAnswers: boolean;
+  allowRetryAfterPass: boolean;
   moduleId: string;
   quizQuestions: QuizQuestion[];
 }
@@ -295,6 +296,7 @@ export default function LessonPage() {
               randomizeQuestions={lesson.randomizeQuestions || false}
               randomizeAnswers={lesson.randomizeAnswers || false}
               showCorrectAnswers={lesson.showCorrectAnswers !== false}
+              allowRetryAfterPass={lesson.allowRetryAfterPass || false}
               onPassed={() => {
                 setQuizPassed(true);
                 setNextLessonLocked(false);

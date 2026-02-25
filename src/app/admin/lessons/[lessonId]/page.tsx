@@ -29,6 +29,7 @@ interface Lesson {
   randomizeQuestions: boolean;
   randomizeAnswers: boolean;
   showCorrectAnswers: boolean;
+  allowRetryAfterPass: boolean;
   moduleId: string;
   quizQuestions: QuizQuestion[];
 }
@@ -66,6 +67,7 @@ export default function AdminLessonEditPage() {
     randomizeQuestions: false,
     randomizeAnswers: false,
     showCorrectAnswers: true,
+    allowRetryAfterPass: false,
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -103,6 +105,7 @@ export default function AdminLessonEditPage() {
         randomizeQuestions: data.randomizeQuestions || false,
         randomizeAnswers: data.randomizeAnswers || false,
         showCorrectAnswers: data.showCorrectAnswers !== false,
+        allowRetryAfterPass: data.allowRetryAfterPass || false,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load lesson");
@@ -158,6 +161,7 @@ export default function AdminLessonEditPage() {
         body.randomizeQuestions = form.randomizeQuestions;
         body.randomizeAnswers = form.randomizeAnswers;
         body.showCorrectAnswers = form.showCorrectAnswers;
+        body.allowRetryAfterPass = form.allowRetryAfterPass;
       }
 
       await apiFetch(`/modules/${moduleId}/lessons/${lessonId}`, {
@@ -458,6 +462,24 @@ export default function AdminLessonEditPage() {
             </label>
             <p className="text-xs text-gray-500 mt-1">
               When disabled, learners only see their final score without individual question marking.
+            </p>
+          </div>
+        )}
+        {lesson.type === "quiz" && (
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                checked={form.allowRetryAfterPass}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, allowRetryAfterPass: e.target.checked }))
+                }
+                className="rounded border-gray-300"
+              />
+              Allow retry after passing
+            </label>
+            <p className="text-xs text-gray-500 mt-1">
+              When enabled, learners can retake the quiz even after passing.
             </p>
           </div>
         )}

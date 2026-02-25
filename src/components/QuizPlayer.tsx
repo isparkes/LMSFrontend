@@ -48,6 +48,7 @@ export default function QuizPlayer({
   randomizeQuestions = false,
   randomizeAnswers = false,
   showCorrectAnswers = true,
+  allowRetryAfterPass = false,
   onPassed,
 }: {
   lessonId: string;
@@ -57,6 +58,7 @@ export default function QuizPlayer({
   randomizeQuestions?: boolean;
   randomizeAnswers?: boolean;
   showCorrectAnswers?: boolean;
+  allowRetryAfterPass?: boolean;
   onPassed?: () => void;
 }) {
   const [shuffleKey, setShuffleKey] = useState(0);
@@ -109,6 +111,7 @@ export default function QuizPlayer({
   const [error, setError] = useState("");
   const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
   const [attemptsExhausted, setAttemptsExhausted] = useState(false);
+  const [hasPreviouslyPassed, setHasPreviouslyPassed] = useState(false);
 
   const loadAttempts = () => {
     if (passMarkPercentage > 0 || maxAttempts > 0) {
@@ -118,6 +121,9 @@ export default function QuizPlayer({
           if (maxAttempts > 0 && data.length >= maxAttempts) {
             const hasPassed = data.some((a) => a.passed);
             if (!hasPassed) setAttemptsExhausted(true);
+          }
+          if (passMarkPercentage > 0 && !allowRetryAfterPass) {
+            setHasPreviouslyPassed(data.some((a) => a.passed));
           }
         })
         .catch(() => {});
@@ -206,7 +212,7 @@ export default function QuizPlayer({
   };
 
   const attemptsUsed = attempts.length;
-  const canSubmit = !attemptsExhausted;
+  const canSubmit = !attemptsExhausted && !hasPreviouslyPassed;
 
   return (
     <div className="space-y-6">
@@ -228,6 +234,12 @@ export default function QuizPlayer({
       {attemptsExhausted && !result?.passed && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
           You have used all {maxAttempts} attempts. Contact your administrator to reset your attempts.
+        </div>
+      )}
+
+      {hasPreviouslyPassed && !result && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
+          You have already passed this quiz.
         </div>
       )}
 
@@ -347,7 +359,7 @@ export default function QuizPlayer({
                 : " Please try again."}
             </p>
           )}
-          {!attemptsExhausted && (
+          {!attemptsExhausted && (allowRetryAfterPass || !result.passed) && (
             <button
               onClick={handleRetry}
               className="mt-3 bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark"
